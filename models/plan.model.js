@@ -1,3 +1,4 @@
+// Description: This file contains the schema for the evacuation plan model.
 const { Schema, model } = require('mongoose');
 
 const evacuationPlanSchema = new Schema({

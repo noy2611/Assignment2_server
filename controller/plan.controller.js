@@ -1,9 +1,8 @@
-// const mongoose = require('mongoose');
+// Description: It has all the methods for the plan model.
 const PlanRepository = require("../repository/plan.repository");
 const planRepository = new PlanRepository();
 
 exports.planController = {
-  
   async getAllPlans(req, res) {
     try {
       const plans = await planRepository.find();
@@ -21,15 +20,14 @@ exports.planController = {
     }
   },
 
-
   async getPlanById(req, res) {
     try {
       const { id } = req.params;
-      console.log('Requested Plan ID:', id);
-  
+      console.log("Requested Plan ID:", id);
+
       const plan = await planRepository.retrieve(id);
-      console.log('Retrieved Plan:', plan);
-  
+      console.log("Retrieved Plan:", plan);
+
       if (!plan) {
         res.status(404).json({
           status: 404,
@@ -43,7 +41,7 @@ exports.planController = {
         });
       }
     } catch (error) {
-      console.error('Error:', error.message);
+      console.error("Error:", error.message);
       res.status(500).json({
         status: 500,
         message: "Internal Server Error",
@@ -51,7 +49,7 @@ exports.planController = {
       });
     }
   },
-  
+
   async createPlan(req, res) {
     try {
       const { body: Plan } = req;
@@ -99,31 +97,30 @@ exports.planController = {
       });
     }
   },
-async deletePlan(req, res) {
-  try {
-    const { id } = req.params;
-    const deletedPlan = await planRepository.delete(id);
 
-    res.status(200).json({
-      status: 200,
-      message: "Plan deleted",
-      data: deletedPlan,
-    });
-  } catch (error) {
-    if (error.message === "Plan not found") {
-      res.status(404).json({
-        status: 404,
-        message: "Plan not found",
-      });
-    } else {
+  async deletePlan(req, res) {
+    try {
+      const { id } = req.params;
+      const deletedPlan = await planRepository.delete(id);
+
+      if (!deletedPlan) {
+        res.status(404).json({
+          status: 404,
+          message: "Plan not found",
+        });
+      } else {
+        res.status(200).json({
+          status: 200,
+          message: "Plan deleted",
+          data: deletedPlan,
+        });
+      }
+    } catch (error) {
       res.status(500).json({
         status: 500,
         message: "Internal Server Error",
         error: error.message,
       });
     }
-  }
-}};
-
-
-
+  },
+};

@@ -1,4 +1,4 @@
-// // Code to connect to MongoDB and perform CRUD operations
+// Description: Code to connect to MongoDB and perform CRUD operations
 
 const { EventEmitter } = require("events");
 const mongoose = require("mongoose");
@@ -32,7 +32,7 @@ module.exports = class MongoStorage extends EventEmitter {
   
   create(plan) {
     const newPlan = new this.model(plan);
-    newPlan.save();
+     return newPlan.save();
   }
 
 
@@ -46,7 +46,6 @@ module.exports = class MongoStorage extends EventEmitter {
       });
   }
   
-
   update(id, plan) {
     return this.model.updateOne({ id }, plan);
   }

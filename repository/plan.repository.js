@@ -25,7 +25,8 @@ module.exports = class PlanRepository {
     return this.storage.update(id, plan);
   }
   async delete(id) {
-    return this.storage.delete(id);
+    const result = await this.storage.delete(id);
+    return result ? result : null;
   }
 };
 
