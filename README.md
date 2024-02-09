@@ -19,8 +19,8 @@ Welcome to MyServer, a Node HTTP server application designed for managing evacua
 - **Data Storage:** Evacuation plans are stored in a MongoDB database. The server supports CRUD operations to effectively manage these plans.
 
 ## API Documentation
-<!-- 
-Explore the API using Postman: [Evacuation Plans API]() -->
+
+Explore the API using Postman: [Evacuation Plans API](https://documenter.getpostman.com/view/32008774/2s9YyzcdQi)
 
 ## Getting Started
 
