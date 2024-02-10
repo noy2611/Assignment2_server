@@ -1,5 +1,5 @@
-<div align="center">
- # **Fullstack Course Second Assignment**
+# <div align="center">
+ Fullstack Course Second Assignment
 </div>
 
 # MyServer with MongoDB and Express
