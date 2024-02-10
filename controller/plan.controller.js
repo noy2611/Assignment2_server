@@ -1,22 +1,39 @@
 // Description: It has all the methods for the plan model.
 const PlanRepository = require("../repository/plan.repository");
 const planRepository = new PlanRepository();
+const {
+  ServerError,
+  BadRequestError,
+  NotFoundError,
+} = require("../errors/error");
 
 exports.planController = {
   async getAllPlans(req, res) {
     try {
       const plans = await planRepository.find();
+
+      if (!plans || plans.length === 0) {
+        throw new NotFoundError("No plans found");
+      }
+
       res.status(200).json({
         status: 200,
         message: "Success",
         data: plans,
       });
     } catch (error) {
-      res.status(500).json({
-        status: 500,
-        message: "Internal Server Error",
-        error: error.message,
-      });
+      console.error(`Error: ${error.message}`);
+      if (error instanceof ServerError) {
+        res.status(500).json({
+          status: 500,
+          message: "Internal Server Error",
+        });
+      } else {
+        res.status(error.status || 500).json({
+          status: error.status || 500,
+          message: error.message,
+        });
+      }
     }
   },
 
@@ -29,10 +46,7 @@ exports.planController = {
       console.log("Retrieved Plan:", plan);
 
       if (!plan) {
-        res.status(404).json({
-          status: 404,
-          message: "Plan not found",
-        });
+        throw new NotFoundError(`Plan with ID ${id} not found`);
       } else {
         res.status(200).json({
           status: 200,
@@ -41,86 +55,115 @@ exports.planController = {
         });
       }
     } catch (error) {
-      console.error("Error:", error.message);
-      res.status(500).json({
-        status: 500,
-        message: "Internal Server Error",
-        error: error.message,
+      console.error(`Error: ${error.message}`);
+      res.status(error.status || 500).json({
+        status: error.status || 500,
+        message: error.message,
       });
     }
   },
 
   async createPlan(req, res) {
     try {
-      const { body: Plan } = req;
-      const createdPlan = await planRepository.create(Plan);
+      const { body: plan } = req;
 
+      if (!plan.name || !plan.location || !plan.details) {
+        throw new BadRequestError("Plan data is incomplete");
+      }
+
+      const createdPlan = await planRepository.create(plan);
       res.status(201).json({
         status: 201,
         message: "Plan created",
         data: createdPlan,
       });
     } catch (error) {
-      res.status(500).json({
-        status: 500,
-        message: "Internal Server Error",
-        error: error.message,
-      });
+      console.error(`Error: ${error.message}`);
+      if (error instanceof BadRequestError) {
+        res.status(400).json({
+          status: 400,
+          message: error.message,
+        });
+      } else {
+        res.status(error.status || 500).json({
+          status: error.status || 500,
+          message: error.message,
+        });
+      }
     }
   },
 
   async updatePlan(req, res) {
     try {
       const {
-        body: Plan,
+        body: updatedPlan,
         params: { id },
       } = req;
-      const updatedPlan = await planRepository.update(id, Plan);
 
-      if (!updatedPlan) {
+      if (!updatedPlan || Object.keys(updatedPlan).length === 0) {
+        throw new BadRequestError("Updated plan data is missing");
+      }
+
+      const result = await planRepository.update(id, updatedPlan);
+
+      if (!result) {
+        throw new NotFoundError(`Plan with ID ${id} not found`);
+      }
+
+      res.status(200).json({
+        status: 200,
+        message: "Plan updated",
+        data: result,
+      });
+    } catch (error) {
+      console.error(`Error: ${error.message}`);
+      if (error instanceof NotFoundError) {
         res.status(404).json({
           status: 404,
-          message: "Plan not found",
+          message: error.message,
+        });
+      } else if (error instanceof BadRequestError) {
+        res.status(400).json({
+          status: 400,
+          message: error.message,
         });
       } else {
-        res.status(200).json({
-          status: 200,
-          message: "Plan updated",
-          data: updatedPlan,
+        res.status(error.status || 500).json({
+          status: error.status || 500,
+          message: error.message,
         });
       }
-    } catch (error) {
-      res.status(500).json({
-        status: 500,
-        message: "Internal Server Error",
-        error: error.message,
-      });
     }
   },
 
   async deletePlan(req, res) {
     try {
       const { id } = req.params;
+
       const deletedPlan = await planRepository.delete(id);
 
       if (!deletedPlan) {
+        throw new NotFoundError(`Plan with ID ${id} not found`);
+      }
+
+      res.status(200).json({
+        status: 200,
+        message: "Plan deleted",
+        data: deletedPlan,
+      });
+    } catch (error) {
+      console.error(`Error: ${error.message}`);
+      if (error instanceof NotFoundError) {
         res.status(404).json({
           status: 404,
-          message: "Plan not found",
+          message: error.message,
         });
       } else {
-        res.status(200).json({
-          status: 200,
-          message: "Plan deleted",
-          data: deletedPlan,
+        res.status(error.status || 500).json({
+          status: error.status || 500,
+          message: error.message,
         });
       }
-    } catch (error) {
-      res.status(500).json({
-        status: 500,
-        message: "Internal Server Error",
-        error: error.message,
-      });
     }
   },
 };

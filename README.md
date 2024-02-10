@@ -1,4 +1,6 @@
+<div align="center">
 # Assignment2_server
+</div>
 
 # MyServer with MongoDB and Express
 
@@ -28,5 +30,3 @@ Before running the server, ensure you have the following dependencies installed:
 
 - Node.js: [Download Node.js](https://nodejs.org/)
 - MongoDB: [Download MongoDB](https://www.mongodb.com/try/download/community)
-
-

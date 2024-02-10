@@ -7,7 +7,7 @@ const path = require("path");
 module.exports = class MongoStorage extends EventEmitter {
   constructor(plan) {
     super();
-    this.plan = plan; 
+    this.plan = plan;
     this.model = require(path.join(__dirname, `../models/${plan}.model`));
     this.connect();
   }
@@ -17,7 +17,7 @@ module.exports = class MongoStorage extends EventEmitter {
     mongoose
       .connect(connectionUrl)
       .then(() =>
-        console.log(`Connected to ${this.plan} collection in MongoDB`)
+        console.log(`Connected to ${this.plan} collection in MongoDB`),
       )
       .catch((err) => console.log(`Error connecting to MongoDB ${err}`));
   }
@@ -29,25 +29,22 @@ module.exports = class MongoStorage extends EventEmitter {
   retrieve(id) {
     return this.model.findOne({ id: Number(id) });
   }
-  
+
   create(plan) {
     const newPlan = new this.model(plan);
-     return newPlan.save();
+    return newPlan.save();
   }
-
 
   delete(id) {
-    return this.model.findOneAndDelete({ id })
-      .then(deletedPlan => {
-        if (!deletedPlan) {
-          throw new Error("Plan not found");
-        }
-        return deletedPlan;
-      });
+    return this.model.findOneAndDelete({ id }).then((deletedPlan) => {
+      if (!deletedPlan) {
+        throw new Error("Plan not found");
+      }
+      return deletedPlan;
+    });
   }
-  
+
   update(id, plan) {
     return this.model.updateOne({ id }, plan);
   }
-  
 };

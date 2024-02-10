@@ -29,4 +29,3 @@ module.exports = class PlanRepository {
     return result ? result : null;
   }
 };
-
